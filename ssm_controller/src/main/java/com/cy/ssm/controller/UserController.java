@@ -1,9 +1,10 @@
 package com.cy.ssm.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.SelectKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cy.ssm.pojo.User;
 import com.cy.ssm.service.UserService;
+import com.cy.ssm.utils.PhoneFormatCheckUtils;
+import com.cy.ssm.utils.SendUtils;
 import com.cy.ssm.utils.UUIDUtils;
 
 
@@ -68,19 +71,22 @@ public class UserController {
 		
 	//主界面注册按钮的跳转
 	@RequestMapping("/register")
-	public String register(Model model,User user) {
+	public String register(Model model,User user,HttpSession session,String telephone,String code) {
 		// 为用户的其他属性赋值
 		user.setUid(UUIDUtils.getId());
-		// 调用业务层注册功能
-		try {
-				userService.userRegister(user);
-				model.addAttribute("msg", "用户注册成功,请登录!");
-				
-			} catch (Exception e) {
-				// 注册失败,跳转到提示页面
-				model.addAttribute("msg", "用户注册失败,请重新注册!");
-				return "jsp/info";
-			}
+		//获取session的值
+		String sysCode = (String)session.getAttribute("code");
+		System.out.println(sysCode);
+		String sysTel = (String)session.getAttribute("telephone");
+		System.out.println(sysTel);
+		if(sysCode.equals(code)&&sysTel.equals(telephone)) {
+			userService.userRegister(user);
+			model.addAttribute("msg", "用户注册成功,请登录!");
+		}
+		else {
+			model.addAttribute("msg", "用户注册失败,请重新注册!");
+			return "jsp/info";	
+		}
 		return "jsp/login";
 	}
 	@RequestMapping("/editmes")
@@ -101,5 +107,28 @@ public class UserController {
 			return false;
 		}
 	}*/
+	/**
+	 * 发送验证码
+	 * @param telephone
+	 * @throws Exception 
+	 */
+	@RequestMapping("/sendCode")
+	public void sendCode(String telephone,HttpServletResponse resp,HttpSession session) throws Exception {
+		//判断手机号是否为空
+		if(telephone==""||telephone==null) {
+			resp.getWriter().println(3);
+			//判断手机号是否合法
+		}else if(!PhoneFormatCheckUtils.isPhoneLegal(telephone)) {
+			resp.getWriter().println(1);
+		}else{
+			String code = userService.createSmsCode(telephone);
+			session.setAttribute("telephone", telephone);
+			session.setAttribute("code", code);
+			resp.getWriter().println(2);
+		}
+	
+		
+	}
+	
 
 }

@@ -11,5 +11,11 @@ public interface UserService {
 	public User findById(String id);
 	//修改查询到的个人信息
 	public void updatemes(User user);
-
+	/**
+	 * 发送验证码
+	 * @param telephone
+	 * @return code
+	 * @throws Exception 
+	 */
+	public String createSmsCode(String telephone) throws Exception;
 }

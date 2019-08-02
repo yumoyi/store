@@ -60,26 +60,41 @@ font {
 						<span id = "s1"></span>
 					</div>
 					<div class="form-group">
-						<label for="inputPassword3" class="col-sm-2 control-label">密码</label>
+						<label for="inputpwd" class="col-sm-2 control-label">密码</label>
 						<div class="col-sm-6">
 							<input type="password" name="password" class="form-control"
-								id="inputPassword3" placeholder="请输入密码">
+								id="inputpwd" placeholder="请输入密码">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="confirmpwd" class="col-sm-2 control-label">确认密码</label>
 						<div class="col-sm-6">
 							<input type="password" class="form-control" id="confirmpwd"
-								placeholder="请输入确认密码">
+								placeholder="请输入确认密码" onblur="checkRePassword()">
 						</div>
+						<div class="col-md-4 data" id="remind"></div> 
 					</div>
 
 					<div class="form-group">
 						<label for="date" class="col-sm-2 control-label">电话</label>
 						<div class="col-sm-6">
-							<input type="text" class="form-control" name="telephone">
+							<input type="text" class="form-control"  placeholder="请输入电话" name="telephone" id="telephone">
 						</div>
 					</div>
+					
+					
+					<div class="form-group">
+						<label for="inputPassword" class="col-sm-2 control-label">短信验证码：</label>
+						<div class="col-sm-6">
+							<input type="text" placeholder="短信验证码" class="form-control" name="code">  
+						</div>
+						<div class="col-sm-4">
+							<%-- <a href="${pageContext.request.contextPath}/sendCode.action">获取短信验证码</a> --%>
+							 <input type="button" id="sendcode" value="获取短信验证码">
+						</div>
+					
+					</div>
+					
 
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
@@ -118,6 +133,36 @@ $(function(){
 			
 });
 </script> -->
+<script>
+	function checkRePassword(){
+		var inputpwd = $("#inputpwd").val();
+		var confirmpwd = $("#confirmpwd").val();
+		if(inputpwd !=confirmpwd){
+			alert("两次密码不一致");
+			return ; 
+		}
+		
+	}
+	$(document).on("click","#sendcode",function sendCode(){
+		var telephone = $("#telephone").val();
+		$.ajax({
+			type:"POST",
+			url:"${pageContext.request.contextPath}/sendCode.action",
+			data:"telephone="+telephone,
+			dataType:"json",
+			success:function(data){
+				if(data==3){
+					alert("请输入手机号码");
+				}else if(data==1){
+					alert("手机号码格式不正确");
+				}else if(data==2){
+					alert("发送验证码成功");
+				}
+			}
+		})
+		
+	})
+</script>
 </html>
 
 
