@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cy.ssm.mapper.ProductMapper" >
+	<select id="findHots" parameterType="int" resultType="Product">
+	select* from product where pflag=0 and cid is not null and is_hot=1 order by pdate desc limit 0,#{mainsize}
+	</select> 
+	<select id="findNews" parameterType="int" resultType="Product">
+	select* from product where pflag=0 and cid is not null order by pdate desc limit 0, #{mainsize}
+	</select> 
+</mapper>
